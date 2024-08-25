@@ -1,0 +1,62 @@
+# Xcode
+.DS_Store
+*.xcuserstate
+xcuserdata/
+DerivedData/
+*.xcscmblueprint
+*.xccheckout
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+Cartfile.resolved
+
+# Swift Package Manager
+.build/
+.swiftpm/xcode/package.resolved
+
+# Build products
+*.o
+*.d
+build/
+*.link
+*.hmap
+*.app
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Various settings
+*.moved-aside
+*.pyc
+*.syncinfo
+*.swp
+*~.nib
+*.swo
+
+# OS X noise
+AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in disk images
+.Spotlight-V100
+.Trashes
+
+# Profile
+*.xcconfig
+
+# Code Injection
+injectionforxcode/
+
+# Ignore SourceKit indexing model
+.sourcekitd
+
+# Ignore new Xcode build system
+*.xcresult
+
