@@ -18,7 +18,13 @@ struct SandboxApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationView {
+                List {
+                    NavigationLink(destination: CentralView()) {
+                        Text("Bluetooth BLE Central")
+                    }
+                }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

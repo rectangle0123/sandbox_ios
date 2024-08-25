@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app uses Bluetooth.</string>
+	<key>BluetoothServiceUUID</key>
+	<string>$(BT_SERVICE_UUID)</string>
+	<key>BluetoothServiceUUID16bit</key>
+	<string>$(BT_SERVICE_UUID_16)</string>
+	<key>BluetoothCharacteristicUUID</key>
+	<string>$(BT_CHARACTERISTIC_UUID)</string>
+</dict>
+</plist>

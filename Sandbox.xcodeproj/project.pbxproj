@@ -15,6 +15,7 @@
 		F527423D2C7B01D300123F62 /* SandboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F527423C2C7B01D300123F62 /* SandboxTests.swift */; };
 		F52742472C7B01D300123F62 /* SandboxUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52742462C7B01D300123F62 /* SandboxUITests.swift */; };
 		F52742492C7B01D300123F62 /* SandboxUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52742482C7B01D300123F62 /* SandboxUITestsLaunchTests.swift */; };
+		F52742582C7B049C00123F62 /* CentralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52742572C7B049C00123F62 /* CentralView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,9 @@
 		F52742422C7B01D300123F62 /* SandboxUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SandboxUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F52742462C7B01D300123F62 /* SandboxUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SandboxUITests.swift; sourceTree = "<group>"; };
 		F52742482C7B01D300123F62 /* SandboxUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SandboxUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		F52742552C7B033000123F62 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		F52742562C7B039D00123F62 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F52742572C7B049C00123F62 /* CentralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CentralView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +100,10 @@
 		F52742282C7B01D200123F62 /* Sandbox */ = {
 			isa = PBXGroup;
 			children = (
+				F52742562C7B039D00123F62 /* Info.plist */,
+				F52742552C7B033000123F62 /* Config.xcconfig */,
 				F52742292C7B01D200123F62 /* SandboxApp.swift */,
+				F52742572C7B049C00123F62 /* CentralView.swift */,
 				F527422B2C7B01D200123F62 /* ContentView.swift */,
 				F527422D2C7B01D200123F62 /* Item.swift */,
 				F527422F2C7B01D300123F62 /* Assets.xcassets */,
@@ -260,6 +267,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F52742582C7B049C00123F62 /* CentralView.swift in Sources */,
 				F527422C2C7B01D200123F62 /* ContentView.swift in Sources */,
 				F527422E2C7B01D200123F62 /* Item.swift in Sources */,
 				F527422A2C7B01D200123F62 /* SandboxApp.swift in Sources */,
@@ -301,6 +309,7 @@
 /* Begin XCBuildConfiguration section */
 		F527424A2C7B01D300123F62 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F52742552C7B033000123F62 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -364,6 +373,7 @@
 		};
 		F527424B2C7B01D300123F62 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F52742552C7B033000123F62 /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -429,6 +439,7 @@
 				DEVELOPMENT_TEAM = LQHHY52ZAD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sandbox/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -458,6 +469,7 @@
 				DEVELOPMENT_TEAM = LQHHY52ZAD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sandbox/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
