@@ -71,13 +71,13 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     // MARK: - EventAction
     // ペリフェラルスキャン
     func startScanning() {
-        log(text: "Start scaninng...")
+        log(text: "Start scaninng...", enhanced: true)
         centralManager.scanForPeripherals(withServices: nil, options: nil)
     }
     
     // キャラクタリスティックス Read
     func readCharacteristics() {
-        log(text: "Start Reading...")
+        log(text: "Start Reading...", enhanced: true)
         guard let peripheral = targetPeripheral else {
             log(text: "Error: Peripheral is not available.", error: true)
             return
@@ -104,10 +104,8 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         log(text: "Received advertise: \(peripheral.name ?? "Unknown").")
         // 指定するサービスUUIDを持つペリフェラルのみ接続する
-        // 重複して接続しない
         guard let serviceUUIDs = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID],
-              serviceUUIDs.contains(BluetoothManager.serviceUUID16bit),
-              targetPeripheral?.state != .connected else {
+              serviceUUIDs.contains(BluetoothManager.serviceUUID16bit) else {
             return
         }
         // ペリフェラルの参照を保持
