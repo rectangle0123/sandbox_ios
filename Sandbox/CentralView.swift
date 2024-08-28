@@ -29,18 +29,16 @@ struct CentralView: View {
                     .listStyle(GroupedListStyle())
                 }
                 HStack {
-                    Spacer()
                     ButtonView(
                         systemName: "s.circle",
                         action: bluetoothManager.startScanning
                     )
-                    Spacer()
                     ButtonView(
                         systemName: "r.circle",
                         action: bluetoothManager.readCharacteristics
                     )
-                    Spacer()
                 }
+                .frame(height: 50)
                 .padding()
             }
         }
