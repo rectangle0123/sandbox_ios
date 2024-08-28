@@ -13,39 +13,61 @@ struct CentralView: View {
                     Spacer()
                 } else {
                     List(bluetoothManager.logs) { log in
-                        HStack {
+                        VStack {
                             Text(log.text)
-                                .font(.subheadline)
                                 .foregroundColor(log.error ? .red : log.enhanced ? .accentColor : .gray)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            if let subText = log.subText, !subText.isEmpty {
+                                Text(subText)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                    .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
                         }
                     }
                     .listStyle(GroupedListStyle())
                 }
                 HStack {
-                    Button(action: {
-                        bluetoothManager.startScanning()
-                    }) {
-                        Text("Scan")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8.0)
-                            .accentColor(.white)
-                            .background(Color.accentColor)
-                            .cornerRadius(4.0)
-                    }
-                    Button(action: {
-                        bluetoothManager.readCharacteristics()
-                    }) {
-                        Text("Read")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8.0)
-                            .accentColor(.white)
-                            .background(Color.accentColor)
-                            .cornerRadius(4.0)
-                    }
+                    Spacer()
+                    ButtonView(
+                        systemName: "s.circle",
+                        action: bluetoothManager.startScanning
+                    )
+                    Spacer()
+                    ButtonView(
+                        systemName: "r.circle",
+                        action: bluetoothManager.readCharacteristics
+                    )
+                    Spacer()
                 }
                 .padding()
             }
         }
+    }
+}
+
+struct ButtonView: View {
+    @State private var isPressed = false
+    var systemName: String
+    var action: () -> Void
+    var disabled: Bool = false
+
+    var body: some View {
+        Image(systemName: systemName)
+            .resizable()
+            .frame(width: 40, height: 40)
+            .foregroundColor(isPressed ? .gray : .primary)
+            .padding()
+            .scaleEffect(isPressed ? 0.8 : 1.0)
+            .animation(.easeOut(duration: 0.65), value: isPressed)
+            .onTapGesture {
+                isPressed = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    isPressed = false
+                    action()
+                }
+            }
     }
 }
 
@@ -72,18 +94,21 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     // ペリフェラルスキャン
     func startScanning() {
         log(text: "Start scaninng...", enhanced: true)
-        centralManager.scanForPeripherals(withServices: nil, options: nil)
+        centralManager.scanForPeripherals(
+            withServices: [BluetoothManager.serviceUUID16bit],
+            options: nil
+        )
     }
     
     // キャラクタリスティックス Read
     func readCharacteristics() {
         log(text: "Start Reading...", enhanced: true)
         guard let peripheral = targetPeripheral else {
-            log(text: "Error: Peripheral is not available.", error: true)
+            log(text: "Error", subText: "Peripheral is not available.", error: true)
             return
         }
         guard let service = targetService else {
-            log(text: "Error: Service is not available.", error: true)
+            log(text: "Error", subText: "Service is not available.", error: true)
             return
         }
         // 接続したペリフェラルから取得したサービスのキャラクタリスティックスを検索する
@@ -95,14 +120,14 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     // Bluetooth状態検知コールバック
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         guard central.state == .poweredOn else {
-            log(text: "Error: Bluetooth is not available.", error: true)
+            log(text: "Error", subText: "Bluetooth is not available.", error: true)
             return
         }
     }
     
     // ペリフェラル検知コールバック
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        log(text: "Received advertise: \(peripheral.name ?? "Unknown").")
+        log(text: "Received advertise.", subText: "\(peripheral.name ?? "Unknown")")
         // 指定するサービスUUIDを持つペリフェラルのみ接続する
         guard let serviceUUIDs = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID],
               serviceUUIDs.contains(BluetoothManager.serviceUUID16bit) else {
@@ -117,12 +142,12 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         log(text: "Stop Scanning.")
         // ペリフェラルに接続する
         centralManager.connect(peripheral, options: nil)
-        log(text: "Connecting: \(peripheral.name ?? "Unknown").")
+        log(text: "Connecting.", subText: "\(peripheral.name ?? "Unknown")")
     }
     
     // ペリフェラル接続コールバック
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        log(text: "Connected: \(peripheral.name ?? "Unknown").")
+        log(text: "Connected.", subText:"\(peripheral.name ?? "Unknown")")
         // ペリフェラルのサービスを検索する
         peripheral.discoverServices([BluetoothManager.serviceUUID])
         log(text: "Discovering services.")
@@ -130,7 +155,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     
     // ペリフェラル切断コールバック
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        log(text: "Disconnected: \(peripheral.name ?? "Unknown") \(peripheral.identifier)")
+        log(text: "Disconnected.", subText: "\(peripheral.name ?? "Unknown") \(peripheral.identifier)")
         // ペリフェラルの参照を削除
         targetPeripheral = nil
     }
@@ -139,32 +164,32 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     // サービス検知コールバック
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: (any Error)?) {
         guard error == nil else {
-            log(text: "Error discovering services: \(error!.localizedDescription)", error: true)
+            log(text: "Error", subText: error!.localizedDescription, error: true)
             return
         }
         // サービスを取得する
         guard let services = peripheral.services else {
-            log(text: "Error discovering services: Services not found.", error: true)
+            log(text: "Error",  subText: "Services not found.", error: true)
             return
         }
         guard let service = services.first(where: { $0.uuid == BluetoothManager.serviceUUID }) else {
-            log(text: "Error discovering services: Target service not found.", error: true)
+            log(text: "Error",  subText: "Target service not found.", error: true)
             return
         }
         targetService = service
-        log(text: "Discovered service: \(service.uuid)")
+        log(text: "Discovered service.", subText: service.uuid.uuidString)
     }
     
     // キャラクタリスティックス検出コールバック
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: (any Error)?) {
         guard error == nil else {
-            log(text: "Error discovering characteristics: \(error!.localizedDescription)", error: true)
+            log(text: "Error",  subText: error!.localizedDescription, error: true)
             return
         }
         log(text: "Discovering characteristics.")
         // キャラクタリスティックスからデータを取得する
         service.characteristics?.forEach { characteristic in
-            log(text: "Discovered characteristic: \(characteristic.uuid)")
+            log(text: "Discovered characteristics.", subText: characteristic.uuid.uuidString)
             if characteristic.uuid == BluetoothManager.characteristicUUID {
                 peripheral.readValue(for: characteristic)
             }
@@ -174,13 +199,13 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     // Readレスポンス受信コールバック
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         guard error == nil else {
-            log(text: "Error reading characteristic value: \(error!.localizedDescription)", error: true)
+            log(text: "Error",  subText: error!.localizedDescription, error: true)
             return
         }
         // データを読み取る
-        log(text: "Reading characteristics: \(characteristic.uuid)")
+        log(text: "Reading characteristics.", subText: characteristic.uuid.uuidString)
         if let data = characteristic.value, let text = String(data: data, encoding: .utf8) {
-            log(text: text, enhanced: true)
+            log(text: "Read characteristics.", subText: text)
         } else {
             log(text: "Invalid Data", error: true)
         }
@@ -196,9 +221,9 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     }
 
     // ログ出力
-    private func log(text: String, error: Bool = false, enhanced: Bool = false) {
+    private func log(text: String, subText: String? = nil, error: Bool = false, enhanced: Bool = false) {
         DispatchQueue.main.async {
-            self.logs.append(Log(text: text, error: error, enhanced: enhanced))
+            self.logs.append(Log(text: text, subText: subText, error: error, enhanced: enhanced))
         }
     }
 }
@@ -207,6 +232,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 struct Log: Identifiable {
     var id: UUID = UUID()
     var text: String
+    var subText: String?
     var error: Bool
     var enhanced: Bool
 }
