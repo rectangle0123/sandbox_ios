@@ -72,9 +72,14 @@ struct ButtonView: View {
 // Bluetoothマネージャー
 class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     // MARK: - Constants
-    static let serviceUUID = BluetoothManager.getUUID(forKey: "BluetoothServiceUUID", fatalMessage: "BluetoothServiceUUID is missing.")
-    static let serviceUUID16bit = BluetoothManager.getUUID(forKey: "BluetoothServiceUUID16bit", fatalMessage: "BluetoothServiceUUID16bit is missing.")
-    static let characteristicUUID = BluetoothManager.getUUID(forKey: "BluetoothCharacteristicUUID", fatalMessage: "BluetoothCharacteristicUUID is missing.")
+    static let serviceUUID = BluetoothManager.getUUID(
+        forKey: "BluetoothServiceUUID",
+        fatalMessage: "BluetoothServiceUUID is missing."
+    )
+    static let characteristicUUID = BluetoothManager.getUUID(
+        forKey: "BluetoothCharacteristicUUID",
+        fatalMessage: "BluetoothCharacteristicUUID is missing."
+    )
     
     // MARK: - Properties
     var centralManager: CBCentralManager!
@@ -93,7 +98,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     func startScanning() {
         log(text: "Start scaninng...", enhanced: true)
         centralManager.scanForPeripherals(
-            withServices: [BluetoothManager.serviceUUID16bit],
+            withServices: [BluetoothManager.serviceUUID],
             options: nil
         )
     }
@@ -128,7 +133,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         log(text: "Received advertise.", subText: "\(peripheral.name ?? "Unknown")")
         // 指定するサービスUUIDを持つペリフェラルのみ接続する
         guard let serviceUUIDs = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID],
-              serviceUUIDs.contains(BluetoothManager.serviceUUID16bit) else {
+              serviceUUIDs.contains(BluetoothManager.serviceUUID) else {
             return
         }
         // ペリフェラルの参照を保持
