@@ -85,6 +85,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     var centralManager: CBCentralManager!
     var targetPeripheral: CBPeripheral?
     var targetService: CBService?
+    var timeoutWorkItem: DispatchWorkItem!
     @Published var logs: [Log] = []
     
     // MARK: - Initialization
@@ -94,18 +95,30 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     }
     
     // MARK: - EventAction
-    // ペリフェラルスキャン
+    // ペリフェラルスキャン開始
     func startScanning() {
         log(text: "Start scaninng.", enhanced: true)
         centralManager.scanForPeripherals(
             withServices: [BluetoothManager.serviceUUID],
             options: nil
         )
+        // タイムアウトの実装
+        timeoutWorkItem = DispatchWorkItem { [weak self] in
+            self?.log(text: "Error", subText: "Scanning has timed out.", error: true)
+            self?.stopScanning()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: timeoutWorkItem)
     }
     
+    // ペリフェラルスキャン終了
+    func stopScanning() {
+        centralManager.stopScan()
+        log(text: "Stop scanning.")
+    }
+
     // キャラクタリスティックス Read
     func readCharacteristics() {
-        log(text: "Start Reading.", enhanced: true)
+        log(text: "Start reading.", enhanced: true)
         guard let peripheral = targetPeripheral else {
             log(text: "Error", subText: "Peripheral is not available.", error: true)
             return
@@ -141,8 +154,8 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         // ペリフェラルにデリゲートを設定する
         targetPeripheral?.delegate = self
         // スキャンを停止する
-        centralManager.stopScan()
-        log(text: "Stop Scanning.")
+        timeoutWorkItem.cancel()
+        stopScanning()
         // ペリフェラルに接続する
         centralManager.connect(peripheral, options: nil)
         log(text: "Connecting.", subText: "\(peripheral.name ?? "Unknown")")
