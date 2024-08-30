@@ -144,7 +144,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     // ペリフェラル検知コールバック
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         log(text: "Received advertise.", subText: "\(peripheral.name ?? "Unknown")")
-        // 指定するサービスUUIDを持つペリフェラルのみ接続する
+        // 指定したサービスUUIDを持つペリフェラルのみ接続する
         guard let serviceUUIDs = advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID],
               serviceUUIDs.contains(BluetoothManager.serviceUUID) else {
             return
@@ -203,11 +203,13 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             return
         }
         log(text: "Discovering characteristics.")
-        // キャラクタリスティックスからデータを取得する
+        // 指定したUUIDのキャラクタリスティックスにReadリクエストを送信する
         service.characteristics?.forEach { characteristic in
             log(text: "Discovered characteristics.", subText: characteristic.uuid.uuidString)
             if characteristic.uuid == BluetoothManager.characteristicUUID {
                 peripheral.readValue(for: characteristic)
+                log(text: "Sent read request.", subText: characteristic.uuid.uuidString)
+
             }
         }
     }
@@ -219,11 +221,10 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             return
         }
         // データを読み取る
-        log(text: "Reading characteristics.", subText: characteristic.uuid.uuidString)
-        if let data = characteristic.value, let text = String(data: data, encoding: .utf8) {
-            log(text: "Read characteristics.", subText: text)
+        if let data = characteristic.value, let res = String(data: data, encoding: .utf8) {
+            log(text: "Received read response.", subText: res)
         } else {
-            log(text: "Invalid Data", error: true)
+            log(text: "Received invalid Data", error: true)
         }
     }
     
