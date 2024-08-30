@@ -96,7 +96,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     // MARK: - EventAction
     // ペリフェラルスキャン
     func startScanning() {
-        log(text: "Start scaninng...", enhanced: true)
+        log(text: "Start scaninng.", enhanced: true)
         centralManager.scanForPeripherals(
             withServices: [BluetoothManager.serviceUUID],
             options: nil
@@ -105,7 +105,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     
     // キャラクタリスティックス Read
     func readCharacteristics() {
-        log(text: "Start Reading...", enhanced: true)
+        log(text: "Start Reading.", enhanced: true)
         guard let peripheral = targetPeripheral else {
             log(text: "Error", subText: "Peripheral is not available.", error: true)
             return
